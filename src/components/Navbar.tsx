@@ -73,6 +73,10 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
+            <Link to="/careers" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
+              {t.nav.careers}
+            </Link>
+
             <Link to="/contact" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
               {t.nav.contact}
             </Link>
@@ -163,6 +167,14 @@ export const Navbar: React.FC = () => {
                 </div>
               )}
             </div>
+
+            <Link
+              to="/careers"
+              className="block py-2 text-gray-700 font-medium"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {t.nav.careers}
+            </Link>
 
             <Link
               to="/contact"

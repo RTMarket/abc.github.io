@@ -6,6 +6,7 @@ export const en: Translation = {
     home: 'Home',
     about: 'About Us',
     services: 'Services',
+    careers: 'Careers',
     contact: 'Contact',
     sellerRegister: 'Cross-Border Seller Compliance',
     factoryRegister: 'Factory Registration',
@@ -264,6 +265,74 @@ export const en: Translation = {
       productImages: 'Product Images/Catalog',
       submit: 'Submit Application',
       agreeTerms: 'I have read and agree to the Terms of Service',
+    },
+  },
+
+  // Careers Page
+  careers: {
+    title: 'Join Us',
+    subtitle: 'Work with the Best, Make an Impact',
+    intro: 'We are looking for like-minded partners to build a China-US-Mexico cross-border e-commerce ecosystem together. If you share our vision, we welcome you to join our team!',
+    positions: 'Open Positions',
+    apply: 'Apply Now',
+    email: 'Resume Email',
+    benefits: {
+      title: 'What We Offer',
+      items: ['Competitive salary', 'Flexible working hours', 'Professional training & development', 'Cross-cultural environment'],
+    },
+    attorney: {
+      title: 'U.S. Attorney (Part-time)',
+      type: 'Part-time',
+      location: 'United States',
+      language: 'Chinese & English',
+      description: 'Provide legal consultation support for cross-border e-commerce operations to ensure compliance.',
+      responsibilities: ['Review cross-border e-commerce legal documents', 'Provide compliance recommendations', 'Handle legal consultations'],
+      requirements: ['U.S. Bar License', '3+ years of practice experience', 'Fluent in Chinese and English', 'Familiar with cross-border e-commerce regulations preferred'],
+    },
+    cpa: {
+      title: 'U.S. CPA (Part-time)',
+      type: 'Part-time',
+      location: 'United States',
+      language: 'Chinese & English',
+      description: 'Provide tax consultation and compliance support for cross-border e-commerce.',
+      responsibilities: ['Provide U.S. tax consultation', 'Assist with annual tax filing', 'Tax compliance review'],
+      requirements: ['U.S. CPA certification', '3+ years of relevant experience', 'Familiar with China-US tax treaties', 'Good communication skills'],
+    },
+    partner: {
+      title: 'U.S. Local Partner',
+      type: 'Partnership',
+      location: 'United States',
+      language: 'English',
+      model: 'Profit-Sharing + Revenue Sharing',
+      whyTitle: 'Why We Need You',
+      whyDesc: 'Platforms like Amazon, Walmart, and TikTok Shop offer traffic advantages and policy support to U.S.-registered local businesses. We are seeking a U.S.-based partner to jointly establish an American company (LLC) and conduct e-commerce operations in a compliant manner.',
+      responsibilities: {
+        title: 'Partner Responsibilities',
+        items: [
+          'Serve as a registered member of a U.S. LLC, assisting with company registration, EIN application, bank account opening',
+          'Cooperate with platform identity verification when needed (e.g., video calls)',
+          'Authorize professional accountants to handle annual tax filing matters',
+          'Share insights and understanding of the U.S. market',
+          'Serve as one of the company\'s local contacts to assist with necessary matters',
+        ],
+      },
+      requirements: {
+        title: 'Who We\'re Looking For',
+        items: ['U.S. citizen or permanent resident', 'Age 18 or older, clean criminal record, good credit history', 'Basic English communication skills', 'Experience in e-commerce, trade, or logistics is a plus'],
+      },
+      benefits: {
+        title: 'Cooperation Benefits',
+        items: [
+          'Zero Financial Investment: All basic operational costs covered by the operating party',
+          'Profit Sharing: Receive a share of the business\'s net profits according to agreed distribution ratio',
+          'Monthly Base Subsidy: Fixed monthly subsidy provided during cooperation period',
+          'Comprehensive Operational Support: Product supply chain, store operations, advertising managed by professional team',
+        ],
+      },
+      process: {
+        title: 'Application Process',
+        items: ['Submit Application: Send resume to hr@usfactorybridge.com', 'Initial Discussion: Schedule an online meeting', 'Proposal Negotiation: Clarify cooperation model, profit distribution, sign formal agreement', 'Launch Cooperation: Complete company registration and begin operations'],
+      },
     },
   },
 
