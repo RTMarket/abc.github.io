@@ -32,60 +32,60 @@ export const Admin: React.FC = () => {
       ? ['企业名称(中文)', '企业名称(英文)', '统一社会信用代码', '联系人', '电话', '邮箱', '微信', '当前平台', '目标平台', '美国店铺数', '墨西哥店铺数', '需要合伙人', '需要美国银行', '需要墨西哥银行', '月销售额', '产品类目', '海外仓', '备货资金', '需要供应链', '需要MCN', '需要物流', '需要支付', '服务方案', '预算', '其他需求', '提交时间']
       : ['工厂名称(英文)', '工厂名称(中文)', '注册国家', '注册地址', '税号', '联系人', '电话', '邮箱', '网站', '产品类目', '产品描述', '有认证', '资质证书', 'MOQ', '交货时间', '月产能', '本土库存', '发货方式', '样品订单', '品牌服务', '其他信息', '提交时间'];
 
-    const rows = data.map(item => {
+    const rows = data.map((item: any) => {
       if (type === 'seller') {
         return [
-          item.companyNameCn,
-          item.companyNameEn,
-          item.unifiedCode,
-          item.contactName,
-          item.phone,
-          item.email,
-          item.wechat,
-          item.currentPlatforms.join(', '),
-          item.targetPlatforms.join(', '),
-          item.usStoreCount,
-          item.mxStoreCount,
-          item.needPartner,
-          item.needUsBank,
-          item.needMxBank,
-          item.monthlySales,
-          item.productCategories.join(', '),
-          item.overseasWarehouse,
-          item.warehouseFunds,
-          item.needSupplyChain,
-          item.needMcn,
-          item.needLogistics,
-          item.needPayment,
-          item.servicePlan,
-          item.budget,
-          item.otherNeeds,
-          new Date(item.submittedAt).toLocaleString()
+          item.company_name_cn || '',
+          item.company_name_en || '',
+          item.unified_code || '',
+          item.contact_name || '',
+          item.phone || '',
+          item.email || '',
+          item.wechat || '',
+          (item.current_platforms || []).join(', '),
+          (item.target_platforms || []).join(', '),
+          item.us_store_count || '',
+          item.mx_store_count || '',
+          item.need_partner || '',
+          item.need_us_bank || '',
+          item.need_mx_bank || '',
+          item.monthly_sales || '',
+          (item.product_categories || []).join(', '),
+          item.overseas_warehouse || '',
+          item.warehouse_funds || '',
+          item.need_supply_chain || '',
+          item.need_mcn || '',
+          item.need_logistics || '',
+          item.need_payment || '',
+          item.service_plan || '',
+          item.budget || '',
+          item.other_needs || '',
+          item.created_at ? new Date(item.created_at).toLocaleString() : ''
         ];
       } else {
         return [
-          item.factoryNameEn,
-          item.factoryNameCn,
-          item.registerCountry,
-          item.registerAddress,
-          item.taxId,
-          item.contactName,
-          item.phone,
-          item.email,
-          item.website,
-          item.productCategories.join(', '),
-          item.productDesc,
-          item.hasCert,
-          item.certificates.map(c => `${c.type}: ${c.number}`).join('; '),
-          item.moq,
-          item.leadTime,
-          item.capacity,
-          item.hasLocalStock,
-          item.shippingMethods.join(', '),
-          item.sampleOrder,
-          item.brandService,
-          item.otherInfo,
-          new Date(item.submittedAt).toLocaleString()
+          item.factory_name_en || '',
+          item.factory_name_cn || '',
+          item.register_country || '',
+          item.register_address || '',
+          item.tax_id || '',
+          item.contact_name || '',
+          item.phone || '',
+          item.email || '',
+          item.website || '',
+          (item.product_categories || []).join(', '),
+          item.product_desc || '',
+          item.has_cert || '',
+          (item.certificates || []).map((c: any) => `${c.type}: ${c.number}`).join('; '),
+          item.moq || '',
+          item.lead_time || '',
+          item.capacity || '',
+          item.has_local_stock || '',
+          (item.shipping_methods || []).join(', '),
+          item.sample_order || '',
+          item.brand_service || '',
+          item.other_info || '',
+          item.created_at ? new Date(item.created_at).toLocaleString() : ''
         ];
       }
     });
@@ -205,14 +205,14 @@ export const Admin: React.FC = () => {
                 <tbody>
                   {sellerSubmissions.map(sub => (
                     <tr key={sub.id} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">{sub.companyNameCn}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{sub.company_name_cn}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        <div>{sub.contactName}</div>
+                        <div>{sub.contact_name}</div>
                         <div className="text-xs">{sub.email}</div>
                         <div className="text-xs">{sub.phone}</div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
-                        {new Date(sub.submittedAt).toLocaleString()}
+                        {sub.created_at ? new Date(sub.created_at).toLocaleString() : ''}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <button
@@ -264,14 +264,14 @@ export const Admin: React.FC = () => {
                 <tbody>
                   {factorySubmissions.map(sub => (
                     <tr key={sub.id} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">{sub.factoryNameEn}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{sub.factory_name_en}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        <div>{sub.contactName}</div>
+                        <div>{sub.contact_name}</div>
                         <div className="text-xs">{sub.email}</div>
                         <div className="text-xs">{sub.phone}</div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
-                        {new Date(sub.submittedAt).toLocaleString()}
+                        {sub.created_at ? new Date(sub.created_at).toLocaleString() : ''}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <button
