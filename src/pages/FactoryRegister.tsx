@@ -8,6 +8,33 @@ interface Certificate {
   number: string;
 }
 
+// 数据转换函数 - 将表单数据转换为数据库格式
+const convertToDbFormat = (formData: any, certificates: Certificate[]) => {
+  return {
+    factory_name_en: formData.factoryNameEn || '',
+    factory_name_cn: formData.factoryNameCn || '',
+    register_country: formData.registerCountry || '',
+    register_address: formData.registerAddress || '',
+    tax_id: formData.taxId || '',
+    contact_name: formData.contactName || '',
+    phone: formData.phone || '',
+    email: formData.email || '',
+    website: formData.website || '',
+    product_categories: formData.productCategories || [],
+    product_desc: formData.productDesc || '',
+    has_cert: formData.hasCert || '',
+    certificates: certificates.filter(cert => cert.type && cert.number),
+    moq: formData.moq || '',
+    lead_time: formData.leadTime || '',
+    capacity: formData.capacity || '',
+    has_local_stock: formData.hasLocalStock || '',
+    shipping_methods: formData.shippingMethods || [],
+    sample_order: formData.sampleOrder || '',
+    brand_service: formData.brandService || '',
+    other_info: formData.otherInfo || '',
+  };
+};
+
 export const FactoryRegister: React.FC = () => {
   const { t, language } = useLanguage();
   const { addFactorySubmission } = useAdmin();
@@ -78,13 +105,9 @@ export const FactoryRegister: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Filter out empty certificates
-    const validCertificates = certificates.filter(cert => cert.type && cert.number);
-
-    addFactorySubmission({
-      ...formData,
-      certificates: validCertificates,
-    });
+    // 转换为数据库格式
+    const dbData = convertToDbFormat(formData, certificates);
+    addFactorySubmission(dbData);
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

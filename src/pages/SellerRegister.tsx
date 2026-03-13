@@ -3,6 +3,37 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { useAdmin } from '@/store/AdminContext';
 import { Send, CheckCircle } from 'lucide-react';
 
+// 数据转换函数 - 将表单数据转换为数据库格式
+const convertToDbFormat = (formData: any) => {
+  return {
+    company_name_cn: formData.companyNameCn || '',
+    company_name_en: formData.companyNameEn || '',
+    unified_code: formData.unifiedCode || '',
+    contact_name: formData.contactName || '',
+    phone: formData.phone || '',
+    email: formData.email || '',
+    wechat: formData.wechat || '',
+    current_platforms: formData.currentPlatforms || [],
+    target_platforms: formData.targetPlatforms || [],
+    us_store_count: formData.usStoreCount || '',
+    mx_store_count: formData.mxStoreCount || '',
+    need_partner: formData.needPartner || '',
+    need_us_bank: formData.needUsBank || '',
+    need_mx_bank: formData.needMxBank || '',
+    monthly_sales: formData.monthlySales || '',
+    product_categories: formData.productCategories || [],
+    overseas_warehouse: formData.overseasWarehouse || '',
+    warehouse_funds: formData.warehouseFunds || '',
+    need_supply_chain: formData.needSupplyChain || '',
+    need_mcn: formData.needMcn || '',
+    need_logistics: formData.needLogistics || '',
+    need_payment: formData.needPayment || '',
+    service_plan: formData.servicePlan || '',
+    budget: formData.budget || '',
+    other_needs: formData.otherNeeds || '',
+  };
+};
+
 export const SellerRegister: React.FC = () => {
   const { t, language } = useLanguage();
   const { addSellerSubmission } = useAdmin();
@@ -59,7 +90,9 @@ export const SellerRegister: React.FC = () => {
 
     try {
       const { agreePrivacy, ...submissionData } = formData;
-      addSellerSubmission(submissionData);
+      // 转换为数据库格式
+      const dbData = convertToDbFormat(submissionData);
+      await addSellerSubmission(dbData);
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {

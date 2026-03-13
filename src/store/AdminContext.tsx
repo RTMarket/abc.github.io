@@ -1,71 +1,73 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase, TABLE_NAMES } from '@/lib/supabase';
 
 export interface SellerSubmission {
   id: string;
-  companyNameCn: string;
-  companyNameEn: string;
-  unifiedCode: string;
-  contactName: string;
+  company_name_cn: string;
+  company_name_en: string;
+  unified_code: string;
+  contact_name: string;
   phone: string;
   email: string;
   wechat: string;
-  currentPlatforms: string[];
-  targetPlatforms: string[];
-  usStoreCount: string;
-  mxStoreCount: string;
-  needPartner: string;
-  needUsBank: string;
-  needMxBank: string;
-  monthlySales: string;
-  productCategories: string[];
-  overseasWarehouse: string;
-  warehouseFunds: string;
-  needSupplyChain: string;
-  needMcn: string;
-  needLogistics: string;
-  needPayment: string;
-  servicePlan: string;
+  current_platforms: string[];
+  target_platforms: string[];
+  us_store_count: string;
+  mx_store_count: string;
+  need_partner: string;
+  need_us_bank: string;
+  need_mx_bank: string;
+  monthly_sales: string;
+  product_categories: string[];
+  overseas_warehouse: string;
+  warehouse_funds: string;
+  need_supply_chain: string;
+  need_mcn: string;
+  need_logistics: string;
+  need_payment: string;
+  service_plan: string;
   budget: string;
-  otherNeeds: string;
-  submittedAt: string;
+  other_needs: string;
+  created_at: string;
 }
 
 export interface FactorySubmission {
   id: string;
-  factoryNameEn: string;
-  factoryNameCn: string;
-  registerCountry: string;
-  registerAddress: string;
-  taxId: string;
-  contactName: string;
+  factory_name_en: string;
+  factory_name_cn: string;
+  register_country: string;
+  register_address: string;
+  tax_id: string;
+  contact_name: string;
   phone: string;
   email: string;
   website: string;
-  productCategories: string[];
-  productDesc: string;
-  hasCert: string;
+  product_categories: string[];
+  product_desc: string;
+  has_cert: string;
   certificates: { type: string; number: string }[];
   moq: string;
-  leadTime: string;
+  lead_time: string;
   capacity: string;
-  hasLocalStock: string;
-  shippingMethods: string[];
-  sampleOrder: string;
-  brandService: string;
-  otherInfo: string;
-  submittedAt: string;
+  has_local_stock: string;
+  shipping_methods: string[];
+  sample_order: string;
+  brand_service: string;
+  other_info: string;
+  created_at: string;
 }
 
 interface AdminContextType {
   sellerSubmissions: SellerSubmission[];
   factorySubmissions: FactorySubmission[];
-  addSellerSubmission: (data: Omit<SellerSubmission, 'id' | 'submittedAt'>) => void;
-  addFactorySubmission: (data: Omit<FactorySubmission, 'id' | 'submittedAt'>) => void;
-  deleteSellerSubmission: (id: string) => void;
-  deleteFactorySubmission: (id: string) => void;
+  addSellerSubmission: (data: Omit<SellerSubmission, 'id' | 'created_at'>) => Promise<void>;
+  addFactorySubmission: (data: Omit<FactorySubmission, 'id' | 'created_at'>) => Promise<void>;
+  deleteSellerSubmission: (id: string) => Promise<void>;
+  deleteFactorySubmission: (id: string) => Promise<void>;
   isAdmin: boolean;
   adminLogin: (username: string, password: string) => boolean;
   adminLogout: () => void;
+  isLoading: boolean;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -77,64 +79,206 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [factorySubmissions, setFactorySubmissions] = useState<FactorySubmission[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // 从Supabase加载数据
   useEffect(() => {
-    const savedSeller = localStorage.getItem('sellerSubmissions');
-    const savedFactory = localStorage.getItem('factorySubmissions');
-    const savedAdmin = localStorage.getItem('isAdmin');
+    const loadData = async () => {
+      try {
+        // 加载卖家提交
+        const { data: sellers, error: sellerError } = await supabase
+          .from(TABLE_NAMES.SELLER_SUBMISSIONS)
+          .select('*')
+          .order('created_at', { ascending: false });
 
-    if (savedSeller) {
-      setSellerSubmissions(JSON.parse(savedSeller));
-    }
-    if (savedFactory) {
-      setFactorySubmissions(JSON.parse(savedFactory));
-    }
-    if (savedAdmin === 'true') {
-      setIsAdmin(true);
-    }
+        if (sellerError) {
+          console.error('加载卖家数据失败:', sellerError);
+          // 回退到localStorage
+          const savedSeller = localStorage.getItem('sellerSubmissions');
+          if (savedSeller) {
+            setSellerSubmissions(JSON.parse(savedSeller));
+          }
+        } else if (sellers) {
+          setSellerSubmissions(sellers);
+        }
+
+        // 加载工厂提交
+        const { data: factories, error: factoryError } = await supabase
+          .from(TABLE_NAMES.FACTORY_SUBMISSIONS)
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (factoryError) {
+          console.error('加载工厂数据失败:', factoryError);
+          // 回退到localStorage
+          const savedFactory = localStorage.getItem('factorySubmissions');
+          if (savedFactory) {
+            setFactorySubmissions(JSON.parse(savedFactory));
+          }
+        } else if (factories) {
+          setFactorySubmissions(factories);
+        }
+
+        // 检查管理员登录状态
+        const savedAdmin = localStorage.getItem('isAdmin');
+        if (savedAdmin === 'true') {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.error('加载数据出错:', error);
+        // 回退到localStorage
+        const savedSeller = localStorage.getItem('sellerSubmissions');
+        const savedFactory = localStorage.getItem('factorySubmissions');
+        if (savedSeller) setSellerSubmissions(JSON.parse(savedSeller));
+        if (savedFactory) setFactorySubmissions(JSON.parse(savedFactory));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('sellerSubmissions', JSON.stringify(sellerSubmissions));
-  }, [sellerSubmissions]);
+  const addSellerSubmission = async (data: Omit<SellerSubmission, 'id' | 'created_at'>) => {
+    try {
+      // 尝试保存到Supabase
+      const { data: result, error } = await supabase
+        .from(TABLE_NAMES.SELLER_SUBMISSIONS)
+        .insert([data])
+        .select();
 
-  useEffect(() => {
-    localStorage.setItem('factorySubmissions', JSON.stringify(factorySubmissions));
-  }, [factorySubmissions]);
-
-  useEffect(() => {
-    localStorage.setItem('isAdmin', String(isAdmin));
-  }, [isAdmin]);
-
-  const addSellerSubmission = (data: Omit<SellerSubmission, 'id' | 'submittedAt'>) => {
-    const newSubmission: SellerSubmission = {
-      ...data,
-      id: Date.now().toString(),
-      submittedAt: new Date().toISOString(),
-    };
-    setSellerSubmissions(prev => [newSubmission, ...prev]);
+      if (error) {
+        console.error('Supabase保存失败，回退到localStorage:', error);
+        // 回退到localStorage
+        const newSubmission = {
+          ...data,
+          id: Date.now().toString(),
+          created_at: new Date().toISOString(),
+        };
+        setSellerSubmissions(prev => {
+          const updated = [newSubmission, ...prev];
+          localStorage.setItem('sellerSubmissions', JSON.stringify(updated));
+          return updated;
+        });
+      } else if (result) {
+        // Supabase保存成功，刷新数据
+        setSellerSubmissions(prev => [result[0], ...prev]);
+      }
+    } catch (error) {
+      console.error('保存卖家数据出错:', error);
+      // 回退到localStorage
+      const newSubmission = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+      };
+      setSellerSubmissions(prev => {
+        const updated = [newSubmission, ...prev];
+        localStorage.setItem('sellerSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    }
   };
 
-  const addFactorySubmission = (data: Omit<FactorySubmission, 'id' | 'submittedAt'>) => {
-    const newSubmission: FactorySubmission = {
-      ...data,
-      id: Date.now().toString(),
-      submittedAt: new Date().toISOString(),
-    };
-    setFactorySubmissions(prev => [newSubmission, ...prev]);
+  const addFactorySubmission = async (data: Omit<FactorySubmission, 'id' | 'created_at'>) => {
+    try {
+      // 尝试保存到Supabase
+      const { data: result, error } = await supabase
+        .from(TABLE_NAMES.FACTORY_SUBMISSIONS)
+        .insert([data])
+        .select();
+
+      if (error) {
+        console.error('Supabase保存失败，回退到localStorage:', error);
+        // 回退到localStorage
+        const newSubmission = {
+          ...data,
+          id: Date.now().toString(),
+          created_at: new Date().toISOString(),
+        };
+        setFactorySubmissions(prev => {
+          const updated = [newSubmission, ...prev];
+          localStorage.setItem('factorySubmissions', JSON.stringify(updated));
+          return updated;
+        });
+      } else if (result) {
+        // Supabase保存成功，刷新数据
+        setFactorySubmissions(prev => [result[0], ...prev]);
+      }
+    } catch (error) {
+      console.error('保存工厂数据出错:', error);
+      // 回退到localStorage
+      const newSubmission = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+      };
+      setFactorySubmissions(prev => {
+        const updated = [newSubmission, ...prev];
+        localStorage.setItem('factorySubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    }
   };
 
-  const deleteSellerSubmission = (id: string) => {
-    setSellerSubmissions(prev => prev.filter(s => s.id !== id));
+  const deleteSellerSubmission = async (id: string) => {
+    try {
+      // 尝试从Supabase删除
+      const { error } = await supabase
+        .from(TABLE_NAMES.SELLER_SUBMISSIONS)
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Supabase删除失败:', error);
+      }
+      // 无论Supabase成功与否，都更新本地状态
+      setSellerSubmissions(prev => {
+        const updated = prev.filter(s => s.id !== id);
+        localStorage.setItem('sellerSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    } catch (error) {
+      console.error('删除卖家数据出错:', error);
+      setSellerSubmissions(prev => {
+        const updated = prev.filter(s => s.id !== id);
+        localStorage.setItem('sellerSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    }
   };
 
-  const deleteFactorySubmission = (id: string) => {
-    setFactorySubmissions(prev => prev.filter(f => f.id !== id));
+  const deleteFactorySubmission = async (id: string) => {
+    try {
+      // 尝试从Supabase删除
+      const { error } = await supabase
+        .from(TABLE_NAMES.FACTORY_SUBMISSIONS)
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Supabase删除失败:', error);
+      }
+      // 无论Supabase成功与否，都更新本地状态
+      setFactorySubmissions(prev => {
+        const updated = prev.filter(f => f.id !== id);
+        localStorage.setItem('factorySubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    } catch (error) {
+      console.error('删除工厂数据出错:', error);
+      setFactorySubmissions(prev => {
+        const updated = prev.filter(f => f.id !== id);
+        localStorage.setItem('factorySubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    }
   };
 
   const adminLogin = (username: string, password: string): boolean => {
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       setIsAdmin(true);
+      localStorage.setItem('isAdmin', 'true');
       return true;
     }
     return false;
@@ -142,6 +286,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const adminLogout = () => {
     setIsAdmin(false);
+    localStorage.setItem('isAdmin', 'false');
   };
 
   return (
@@ -155,6 +300,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       isAdmin,
       adminLogin,
       adminLogout,
+      isLoading,
     }}>
       {children}
     </AdminContext.Provider>
