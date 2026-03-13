@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { useAdmin } from '@/store/AdminContext';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 export const Contact: React.FC = () => {
   const { t, language } = useLanguage();
+  const { addContactSubmission } = useAdmin();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,15 +13,30 @@ export const Contact: React.FC = () => {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate form submission
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', message: '' });
-    }, 3000);
+    setIsSubmitting(true);
+
+    try {
+      await addContactSubmission({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+      });
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({ name: '', email: '', phone: '', message: '' });
+      }, 3000);
+    } catch (error) {
+      console.error('Form submission error:', error);
+      alert(language === 'zh' ? '提交失败，请稍后重试' : 'Submission failed, please try again');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -165,10 +182,11 @@ export const Contact: React.FC = () => {
 
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                    disabled={isSubmitting}
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
                   >
                     <Send size={20} />
-                    {t.contact.send}
+                    {isSubmitting ? (language === 'zh' ? '提交中...' : 'Submitting...') : t.contact.send}
                   </button>
                 </form>
               )}

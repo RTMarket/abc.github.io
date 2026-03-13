@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useAdmin } from '@/store/AdminContext';
-import { Download, Trash2, LogOut, Package, Store } from 'lucide-react';
+import { Download, Trash2, LogOut, Package, Store, MessageCircle } from 'lucide-react';
 
 export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const { isAdmin, adminLogin, adminLogout, sellerSubmissions, factorySubmissions, deleteSellerSubmission, deleteFactorySubmission } = useAdmin();
+  const { isAdmin, adminLogin, adminLogout, sellerSubmissions, factorySubmissions, contactSubmissions, deleteSellerSubmission, deleteFactorySubmission, deleteContactSubmission } = useAdmin();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -26,11 +26,13 @@ export const Admin: React.FC = () => {
     navigate('/');
   };
 
-  const exportToExcel = (type: 'seller' | 'factory') => {
-    const data = type === 'seller' ? sellerSubmissions : factorySubmissions;
+  const exportToExcel = (type: 'seller' | 'factory' | 'contact') => {
+    const data = type === 'seller' ? sellerSubmissions : type === 'factory' ? factorySubmissions : contactSubmissions;
     const headers = type === 'seller'
       ? ['企业名称(中文)', '企业名称(英文)', '统一社会信用代码', '联系人', '电话', '邮箱', '微信', '当前平台', '目标平台', '美国店铺数', '墨西哥店铺数', '需要合伙人', '需要美国银行', '需要墨西哥银行', '月销售额', '产品类目', '海外仓', '备货资金', '需要供应链', '需要MCN', '需要物流', '需要支付', '服务方案', '预算', '其他需求', '提交时间']
-      : ['工厂名称(英文)', '工厂名称(中文)', '注册国家', '注册地址', '税号', '联系人', '电话', '邮箱', '网站', '产品类目', '产品描述', '有认证', '资质证书', 'MOQ', '交货时间', '月产能', '本土库存', '发货方式', '样品订单', '品牌服务', '其他信息', '提交时间'];
+      : type === 'factory'
+      ? ['工厂名称(英文)', '工厂名称(中文)', '注册国家', '注册地址', '税号', '联系人', '电话', '邮箱', '网站', '产品类目', '产品描述', '有认证', '资质证书', 'MOQ', '交货时间', '月产能', '本土库存', '发货方式', '样品订单', '品牌服务', '其他信息', '提交时间']
+      : ['姓名', '邮箱', '电话', '留言内容', '提交时间'];
 
     const rows = data.map((item: any) => {
       if (type === 'seller') {
@@ -62,7 +64,7 @@ export const Admin: React.FC = () => {
           item.other_needs || '',
           item.created_at ? new Date(item.created_at).toLocaleString() : ''
         ];
-      } else {
+      } else if (type === 'factory') {
         return [
           item.factory_name_en || '',
           item.factory_name_cn || '',
@@ -85,6 +87,15 @@ export const Admin: React.FC = () => {
           item.sample_order || '',
           item.brand_service || '',
           item.other_info || '',
+          item.created_at ? new Date(item.created_at).toLocaleString() : ''
+        ];
+      } else {
+        // contact
+        return [
+          item.name || '',
+          item.email || '',
+          item.phone || '',
+          item.message || '',
           item.created_at ? new Date(item.created_at).toLocaleString() : ''
         ];
       }
@@ -156,7 +167,7 @@ export const Admin: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold">{t.admin.title}</h1>
               <p className="text-orange-200 mt-1">
-                {t.admin.total}: {sellerSubmissions.length + factorySubmissions.length}
+                {t.admin.total}: {sellerSubmissions.length + factorySubmissions.length + contactSubmissions.length}
               </p>
             </div>
             <button
@@ -276,6 +287,68 @@ export const Admin: React.FC = () => {
                       <td className="px-4 py-3 text-right">
                         <button
                           onClick={() => deleteFactorySubmission(sub.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Contact Submissions */}
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-orange-600" />
+              {language === 'zh' ? '联系我们留言' : 'Contact Messages'} ({contactSubmissions.length})
+            </h2>
+            {contactSubmissions.length > 0 && (
+              <button
+                onClick={() => exportToExcel('contact')}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+              >
+                <Download size={18} />
+                {t.admin.exportExcel}
+              </button>
+            )}
+          </div>
+
+          {contactSubmissions.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">{t.admin.noData}</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{language === 'zh' ? '姓名' : 'Name'}</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{language === 'zh' ? '联系方式' : 'Contact'}</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{language === 'zh' ? '留言内容' : 'Message'}</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{t.admin.submittedAt}</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{t.admin.action}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contactSubmissions.map(sub => (
+                    <tr key={sub.id} className="border-t hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-900">{sub.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        <div>{sub.email}</div>
+                        <div className="text-xs">{sub.phone}</div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500 max-w-md">
+                        {sub.message}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">
+                        {sub.created_at ? new Date(sub.created_at).toLocaleString() : ''}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => deleteContactSubmission(sub.id)}
                           className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <Trash2 size={18} />

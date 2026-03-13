@@ -57,13 +57,25 @@ export interface FactorySubmission {
   created_at: string;
 }
 
+export interface ContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  created_at: string;
+}
+
 interface AdminContextType {
   sellerSubmissions: SellerSubmission[];
   factorySubmissions: FactorySubmission[];
+  contactSubmissions: ContactSubmission[];
   addSellerSubmission: (data: Omit<SellerSubmission, 'id' | 'created_at'>) => Promise<void>;
   addFactorySubmission: (data: Omit<FactorySubmission, 'id' | 'created_at'>) => Promise<void>;
+  addContactSubmission: (data: Omit<ContactSubmission, 'id' | 'created_at'>) => Promise<void>;
   deleteSellerSubmission: (id: string) => Promise<void>;
   deleteFactorySubmission: (id: string) => Promise<void>;
+  deleteContactSubmission: (id: string) => Promise<void>;
   isAdmin: boolean;
   adminLogin: (username: string, password: string) => boolean;
   adminLogout: () => void;
@@ -78,6 +90,7 @@ const ADMIN_PASSWORD = 'fsc2024';
 export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [factorySubmissions, setFactorySubmissions] = useState<FactorySubmission[]>([]);
+  const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -119,6 +132,23 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           setFactorySubmissions(factories);
         }
 
+        // 加载联系提交
+        const { data: contacts, error: contactError } = await supabase
+          .from(TABLE_NAMES.CONTACT_SUBMISSIONS)
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (contactError) {
+          console.error('加载联系数据失败:', contactError);
+          // 回退到localStorage
+          const savedContact = localStorage.getItem('contactSubmissions');
+          if (savedContact) {
+            setContactSubmissions(JSON.parse(savedContact));
+          }
+        } else if (contacts) {
+          setContactSubmissions(contacts);
+        }
+
         // 检查管理员登录状态
         const savedAdmin = localStorage.getItem('isAdmin');
         if (savedAdmin === 'true') {
@@ -129,7 +159,10 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         // 回退到localStorage
         const savedSeller = localStorage.getItem('sellerSubmissions');
         const savedFactory = localStorage.getItem('factorySubmissions');
+        const savedContact = localStorage.getItem('contactSubmissions');
         if (savedSeller) setSellerSubmissions(JSON.parse(savedSeller));
+        if (savedFactory) setFactorySubmissions(JSON.parse(savedFactory));
+        if (savedContact) setContactSubmissions(JSON.parse(savedContact));
         if (savedFactory) setFactorySubmissions(JSON.parse(savedFactory));
       } finally {
         setIsLoading(false);
@@ -275,6 +308,74 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
+  const addContactSubmission = async (data: Omit<ContactSubmission, 'id' | 'created_at'>) => {
+    try {
+      // 尝试保存到Supabase
+      const { data: result, error } = await supabase
+        .from(TABLE_NAMES.CONTACT_SUBMISSIONS)
+        .insert([data])
+        .select();
+
+      if (error) {
+        console.error('Supabase保存失败，回退到localStorage:', error);
+        // 回退到localStorage
+        const newSubmission = {
+          ...data,
+          id: Date.now().toString(),
+          created_at: new Date().toISOString(),
+        };
+        setContactSubmissions(prev => {
+          const updated = [newSubmission, ...prev];
+          localStorage.setItem('contactSubmissions', JSON.stringify(updated));
+          return updated;
+        });
+      } else if (result) {
+        // Supabase保存成功，刷新数据
+        setContactSubmissions(prev => [result[0], ...prev]);
+      }
+    } catch (error) {
+      console.error('保存联系数据出错:', error);
+      // 回退到localStorage
+      const newSubmission = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+      };
+      setContactSubmissions(prev => {
+        const updated = [newSubmission, ...prev];
+        localStorage.setItem('contactSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  };
+
+  const deleteContactSubmission = async (id: string) => {
+    try {
+      // 尝试从Supabase删除
+      const { error } = await supabase
+        .from(TABLE_NAMES.CONTACT_SUBMISSIONS)
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Supabase删除失败:', error);
+      }
+      // 无论Supabase成功与否，都更新本地状态
+      setContactSubmissions(prev => {
+        const updated = prev.filter(f => f.id !== id);
+        localStorage.setItem('contactSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    } catch (error) {
+      console.error('删除联系数据出错:', error);
+      setContactSubmissions(prev => {
+        const updated = prev.filter(f => f.id !== id);
+        localStorage.setItem('contactSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  };
+
   const adminLogin = (username: string, password: string): boolean => {
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       setIsAdmin(true);
@@ -293,10 +394,13 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     <AdminContext.Provider value={{
       sellerSubmissions,
       factorySubmissions,
+      contactSubmissions,
       addSellerSubmission,
       addFactorySubmission,
+      addContactSubmission,
       deleteSellerSubmission,
       deleteFactorySubmission,
+      deleteContactSubmission,
       isAdmin,
       adminLogin,
       adminLogout,

@@ -11,4 +11,5 @@ export const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export const TABLE_NAMES = {
   SELLER_SUBMISSIONS: 'seller_submissions',
   FACTORY_SUBMISSIONS: 'factory_submissions',
+  CONTACT_SUBMISSIONS: 'contact_submissions',
 } as const;
