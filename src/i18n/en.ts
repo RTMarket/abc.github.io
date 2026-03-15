@@ -284,8 +284,8 @@ export const en: Translation = {
       items: ['Competitive salary', 'Flexible working hours', 'Professional training & development', 'Cross-cultural environment'],
     },
     attorney: {
-      title: 'U.S. Attorney (Part-time)',
-      type: 'Part-time',
+      title: 'U.S. Attorney (Full-time & Part-time)',
+      type: 'Full-time & Part-time',
       location: 'United States',
       language: 'Chinese & English',
       description: 'Provide legal consultation support for cross-border e-commerce operations to ensure compliance.',
@@ -293,8 +293,8 @@ export const en: Translation = {
       requirements: ['U.S. Bar License', '3+ years of practice experience', 'Fluent in Chinese and English', 'Familiar with cross-border e-commerce regulations preferred'],
     },
     cpa: {
-      title: 'U.S. CPA (Part-time)',
-      type: 'Part-time',
+      title: 'U.S. CPA (Full-time & Part-time)',
+      type: 'Full-time & Part-time',
       location: 'United States',
       language: 'Chinese & English',
       description: 'Provide tax consultation and compliance support for cross-border e-commerce.',

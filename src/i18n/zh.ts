@@ -282,8 +282,8 @@ export const zh = {
       items: ['具有竞争力的薪酬', '弹性工作制', '专业培训与发展机会', '跨文化交流环境'],
     },
     attorney: {
-      title: '美国本土律师（兼职）',
-      type: '兼职',
+      title: '美国本土律师（全职和兼职）',
+      type: '全职和兼职',
       location: '美国',
       language: '中英双语',
       description: '为跨境电商业务提供法律咨询支持，确保合规运营。',
@@ -291,8 +291,8 @@ export const zh = {
       requirements: ['美国律师执照', '3年以上执业经验', '中英双语沟通能力', '熟悉跨境电商法规者优先'],
     },
     cpa: {
-      title: '美国注册会计师（兼职）',
-      type: '兼职',
+      title: '美国注册会计师（全职和兼职）',
+      type: '全职和兼职',
       location: '美国',
       language: '中英双语',
       description: '为跨境电商提供税务咨询与合规支持。',
