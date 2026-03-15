@@ -11,6 +11,7 @@ import { Contact } from '@/pages/Contact';
 import { Privacy } from '@/pages/Privacy';
 import { SellerRegister } from '@/pages/SellerRegister';
 import { FactoryRegister } from '@/pages/FactoryRegister';
+import { PartnerRegister } from '@/pages/PartnerRegister';
 import { Admin } from '@/pages/Admin';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/seller-register" element={<SellerRegister />} />
                 <Route path="/factory-register" element={<FactoryRegister />} />
+                <Route path="/partner-register" element={<PartnerRegister />} />
                 <Route path="/admin" element={<Admin />} />
               </Routes>
             </main>

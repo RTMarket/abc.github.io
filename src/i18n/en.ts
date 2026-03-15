@@ -10,6 +10,7 @@ export const en: Translation = {
     contact: 'Contact',
     sellerRegister: 'Cross-Border Seller Compliance',
     factoryRegister: 'Factory Registration',
+    partnerRegister: 'Local Partner Application',
   },
 
   // Hero Section

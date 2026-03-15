@@ -12,4 +12,5 @@ export const TABLE_NAMES = {
   SELLER_SUBMISSIONS: 'seller_submissions',
   FACTORY_SUBMISSIONS: 'factory_submissions',
   CONTACT_SUBMISSIONS: 'contact_submissions',
+  PARTNER_SUBMISSIONS: 'partner_submissions',
 } as const;

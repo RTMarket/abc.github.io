@@ -109,6 +109,12 @@ export const Navbar: React.FC = () => {
               >
                 {t.hero.ctaFactory}
               </Link>
+              <Link
+                to="/partner-register"
+                className="px-4 py-2 bg-gray-800 text-white rounded-lg font-medium hover:bg-gray-900 transition-colors text-sm"
+              >
+                {t.nav.partnerRegister}
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -198,6 +204,13 @@ export const Navbar: React.FC = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t.hero.ctaFactory}
+              </Link>
+              <Link
+                to="/partner-register"
+                className="block w-full px-4 py-3 bg-gray-800 text-white text-center rounded-lg font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t.nav.partnerRegister}
               </Link>
             </div>
           </div>

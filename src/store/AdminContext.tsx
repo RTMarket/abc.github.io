@@ -66,16 +66,72 @@ export interface ContactSubmission {
   created_at: string;
 }
 
+export interface PartnerSubmission {
+  id: string;
+  created_at: string;
+  // Section 1
+  title: string;
+  full_name_en: string;
+  full_name_cn: string;
+  dob: string;
+  nationality: string;
+  identity_type: string;
+  residence_state: string;
+  residence_city: string;
+  address: string;
+  phone: string;
+  email: string;
+  telegram: string;
+  whatsapp: string;
+  emergency_contact_name: string;
+  emergency_contact_relation: string;
+  emergency_contact_phone: string;
+  // Section 2
+  has_us_mx_company: string;
+  company_name: string;
+  company_type: string;
+  company_reg_date: string;
+  company_reg_state: string;
+  company_business: string;
+  has_physical_business: string;
+  annual_revenue: string;
+  has_bank_account: string;
+  has_ecommerce_exp: string;
+  ecommerce_exp_detail: string;
+  has_warehouse_logistics: string;
+  warehouse_logistics_detail: string;
+  has_accounting_legal: string;
+  accounting_legal_detail: string;
+  // Section 3
+  target_seller_type: string[];
+  expected_store_count: string;
+  expected_coop_model: string[];
+  expected_profit_share: string;
+  accept_monthly_subsidy: string;
+  weekly_available_time: string;
+  coop_duration: string;
+  // Section 4
+  how_found_us: string;
+  additional_questions: string;
+  cv_sent: string;
+  // Section 5
+  confirm_info: boolean;
+  agree_privacy: boolean;
+}
+
 interface AdminContextType {
   sellerSubmissions: SellerSubmission[];
   factorySubmissions: FactorySubmission[];
   contactSubmissions: ContactSubmission[];
+  partnerSubmissions: PartnerSubmission[];
   addSellerSubmission: (data: Omit<SellerSubmission, 'id' | 'created_at'>) => Promise<void>;
   addFactorySubmission: (data: Omit<FactorySubmission, 'id' | 'created_at'>) => Promise<void>;
   addContactSubmission: (data: Omit<ContactSubmission, 'id' | 'created_at'>) => Promise<void>;
+  addPartnerSubmission: (data: Omit<PartnerSubmission, 'id' | 'created_at'>) => Promise<void>;
   deleteSellerSubmission: (id: string) => Promise<void>;
   deleteFactorySubmission: (id: string) => Promise<void>;
   deleteContactSubmission: (id: string) => Promise<void>;
+  deletePartnerSubmission: (id: string) => Promise<void>;
   isAdmin: boolean;
   adminLogin: (username: string, password: string) => boolean;
   adminLogout: () => void;
@@ -91,6 +147,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [factorySubmissions, setFactorySubmissions] = useState<FactorySubmission[]>([]);
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
+  const [partnerSubmissions, setPartnerSubmissions] = useState<PartnerSubmission[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -149,6 +206,23 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
           setContactSubmissions(contacts);
         }
 
+        // 加载合伙人提交
+        const { data: partners, error: partnerError } = await supabase
+          .from(TABLE_NAMES.PARTNER_SUBMISSIONS)
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (partnerError) {
+          console.error('加载合伙人数据失败:', partnerError);
+          // 回退到localStorage
+          const savedPartner = localStorage.getItem('partnerSubmissions');
+          if (savedPartner) {
+            setPartnerSubmissions(JSON.parse(savedPartner));
+          }
+        } else if (partners) {
+          setPartnerSubmissions(partners);
+        }
+
         // 检查管理员登录状态
         const savedAdmin = localStorage.getItem('isAdmin');
         if (savedAdmin === 'true') {
@@ -160,10 +234,11 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const savedSeller = localStorage.getItem('sellerSubmissions');
         const savedFactory = localStorage.getItem('factorySubmissions');
         const savedContact = localStorage.getItem('contactSubmissions');
+        const savedPartner = localStorage.getItem('partnerSubmissions');
         if (savedSeller) setSellerSubmissions(JSON.parse(savedSeller));
         if (savedFactory) setFactorySubmissions(JSON.parse(savedFactory));
         if (savedContact) setContactSubmissions(JSON.parse(savedContact));
-        if (savedFactory) setFactorySubmissions(JSON.parse(savedFactory));
+        if (savedPartner) setPartnerSubmissions(JSON.parse(savedPartner));
       } finally {
         setIsLoading(false);
       }
@@ -376,6 +451,74 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
+  const addPartnerSubmission = async (data: Omit<PartnerSubmission, 'id' | 'created_at'>) => {
+    try {
+      // 尝试保存到Supabase
+      const { data: result, error } = await supabase
+        .from(TABLE_NAMES.PARTNER_SUBMISSIONS)
+        .insert([data])
+        .select();
+
+      if (error) {
+        console.error('Supabase保存失败，回退到localStorage:', error);
+        // 回退到localStorage
+        const newSubmission = {
+          ...data,
+          id: Date.now().toString(),
+          created_at: new Date().toISOString(),
+        };
+        setPartnerSubmissions(prev => {
+          const updated = [newSubmission, ...prev];
+          localStorage.setItem('partnerSubmissions', JSON.stringify(updated));
+          return updated;
+        });
+      } else if (result) {
+        // Supabase保存成功，刷新数据
+        setPartnerSubmissions(prev => [result[0], ...prev]);
+      }
+    } catch (error) {
+      console.error('保存合伙人数据出错:', error);
+      // 回退到localStorage
+      const newSubmission = {
+        ...data,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+      };
+      setPartnerSubmissions(prev => {
+        const updated = [newSubmission, ...prev];
+        localStorage.setItem('partnerSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  };
+
+  const deletePartnerSubmission = async (id: string) => {
+    try {
+      // 尝试从Supabase删除
+      const { error } = await supabase
+        .from(TABLE_NAMES.PARTNER_SUBMISSIONS)
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Supabase删除失败:', error);
+      }
+      // 无论Supabase成功与否，都更新本地状态
+      setPartnerSubmissions(prev => {
+        const updated = prev.filter(f => f.id !== id);
+        localStorage.setItem('partnerSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    } catch (error) {
+      console.error('删除合伙人数据出错:', error);
+      setPartnerSubmissions(prev => {
+        const updated = prev.filter(f => f.id !== id);
+        localStorage.setItem('partnerSubmissions', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  };
+
   const adminLogin = (username: string, password: string): boolean => {
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       setIsAdmin(true);
@@ -395,12 +538,15 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       sellerSubmissions,
       factorySubmissions,
       contactSubmissions,
+      partnerSubmissions,
       addSellerSubmission,
       addFactorySubmission,
       addContactSubmission,
+      addPartnerSubmission,
       deleteSellerSubmission,
       deleteFactorySubmission,
       deleteContactSubmission,
+      deletePartnerSubmission,
       isAdmin,
       adminLogin,
       adminLogout,

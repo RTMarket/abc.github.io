@@ -8,6 +8,7 @@ export const zh = {
     contact: '联系我们',
     sellerRegister: '跨境卖家本土合规店铺需求',
     factoryRegister: '工厂入驻',
+    partnerRegister: '本土合伙人申请',
   },
 
   // Hero Section
