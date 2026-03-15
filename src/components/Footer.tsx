@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { Mail, Phone, MapPin, Linkedin, Instagram } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Instagram, MessageCircle } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { t, language } = useLanguage();
@@ -63,7 +63,7 @@ export const Footer: React.FC = () => {
                   onClick={() => setShowWechat(!showWechat)}
                   className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
                 >
-                  <span className="text-lg font-bold">微</span>
+                  <MessageCircle size={18} />
                 </button>
                 {showWechat && (
                   <div className="absolute bottom-full left-0 mb-2 p-2 bg-white rounded-lg shadow-xl">
