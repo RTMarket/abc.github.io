@@ -6,9 +6,10 @@ export const zh = {
     services: '核心业务',
     careers: '加入我们',
     contact: '联系我们',
-    sellerRegister: '跨境卖家本土合规店铺需求',
-    factoryRegister: '工厂入驻',
-    partnerRegister: '本土合伙人申请',
+    applyNow: '立即申请',
+    sellerRegister: '申请本土合规店铺',
+    factoryRegister: '工厂入驻申请',
+    partnerRegister: '成为本土合伙人',
   },
 
   // Hero Section
@@ -19,8 +20,9 @@ export const zh = {
     teamDescription: '中美墨三国专业团队 | 三年行业深耕 | 服务数百家跨境卖家',
     coreValue: '我们为您提供合法、合规、透明、安全的本土公司载体，合规店铺运营方案，为您匹配可靠的供应链与生态资源。您负责运营变现，我们负责保驾护航。',
     usMexicoCoverage: '美墨两地，一站式覆盖，两国联动：统一服务标准，无缝衔接美墨业务',
-    ctaSeller: '跨境卖家本土合规店铺需求',
-    ctaFactory: '美墨工厂入驻',
+    ctaSeller: '申请本土合规店铺',
+    ctaFactory: '工厂入驻申请',
+    ctaPartner: '成为本土合伙人',
   },
 
   // Services Overview

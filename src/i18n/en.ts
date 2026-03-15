@@ -8,9 +8,10 @@ export const en: Translation = {
     services: 'Services',
     careers: 'Careers',
     contact: 'Contact',
-    sellerRegister: 'Cross-Border Seller Compliance',
-    factoryRegister: 'Factory Registration',
-    partnerRegister: 'Local Partner Application',
+    applyNow: 'Apply Now',
+    sellerRegister: 'Apply for Local Compliance Shop',
+    factoryRegister: 'Factory Entry Application',
+    partnerRegister: 'Become a Local Partner',
   },
 
   // Hero Section
@@ -21,8 +22,9 @@ export const en: Translation = {
     teamDescription: 'China-US-Mexico Professional Team | 3 Years Industry Experience | Hundreds of Cross-Border Sellers Served',
     coreValue: 'We provide you with legal, compliant, transparent, and secure local company entities, compliant store operation solutions, and connect you with reliable supply chain and ecosystem resources. You focus on operations and monetization, we ensure compliance and protection.',
     usMexicoCoverage: 'US-Mexico Coverage, One-Stop Service: Unified service standards, seamless cross-border business integration.',
-    ctaSeller: 'Cross-Border Seller Compliance',
-    ctaFactory: 'US-Mexico Factory Registration',
+    ctaSeller: 'Apply for Local Compliance Shop',
+    ctaFactory: 'Factory Entry Application',
+    ctaPartner: 'Become a Local Partner',
   },
 
   // Services Overview

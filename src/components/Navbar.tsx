@@ -7,6 +7,7 @@ export const Navbar: React.FC = () => {
   const { language, toggleLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
+  const [applyOpen, setApplyOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
@@ -14,13 +15,10 @@ export const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center">
               <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg md:text-xl">FSC</span>
               </div>
-              <span className="hidden sm:block text-sm md:text-base font-semibold text-gray-800">
-                {language === 'zh' ? '佳和供应链' : 'Prime Harmony'}
-              </span>
             </Link>
           </div>
 
@@ -95,26 +93,37 @@ export const Navbar: React.FC = () => {
               </span>
             </button>
 
-            {/* CTA Buttons - Desktop */}
-            <div className="hidden lg:flex items-center gap-2">
-              <Link
-                to="/seller-register"
-                className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors text-sm"
-              >
-                {t.hero.ctaSeller}
-              </Link>
-              <Link
-                to="/factory-register"
-                className="px-4 py-2 border border-orange-600 text-orange-600 rounded-lg font-medium hover:bg-orange-50 transition-colors text-sm"
-              >
-                {t.hero.ctaFactory}
-              </Link>
-              <Link
-                to="/partner-register"
-                className="px-4 py-2 bg-gray-800 text-white rounded-lg font-medium hover:bg-gray-900 transition-colors text-sm"
-              >
-                {t.nav.partnerRegister}
-              </Link>
+            {/* Apply Now Dropdown - Desktop */}
+            <div className="relative group">
+              <button className="flex items-center gap-1 px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors text-sm">
+                {t.nav.applyNow}
+                <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
+              </button>
+              <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform translate-y-2 group-hover:translate-y-0">
+                <div className="py-2">
+                  <Link
+                    to="/seller-register"
+                    className="block px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t.nav.sellerRegister}
+                  </Link>
+                  <Link
+                    to="/factory-register"
+                    className="block px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t.nav.factoryRegister}
+                  </Link>
+                  <Link
+                    to="/partner-register"
+                    className="block px-4 py-3 text-gray-700 hover:bg-orange-50 hover:text-orange-600 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t.nav.partnerRegister}
+                  </Link>
+                </div>
+              </div>
             </div>
 
             {/* Mobile Menu Button */}
@@ -190,28 +199,40 @@ export const Navbar: React.FC = () => {
               {t.nav.contact}
             </Link>
 
-            <div className="pt-4 space-y-2">
-              <Link
-                to="/seller-register"
-                className="block w-full px-4 py-3 bg-orange-600 text-white text-center rounded-lg font-medium"
-                onClick={() => setMobileMenuOpen(false)}
+            {/* Apply Now Accordion - Mobile */}
+            <div>
+              <button
+                className="flex items-center justify-between w-full py-2 text-orange-600 font-medium"
+                onClick={() => setApplyOpen(!applyOpen)}
               >
-                {t.hero.ctaSeller}
-              </Link>
-              <Link
-                to="/factory-register"
-                className="block w-full px-4 py-3 border border-orange-600 text-orange-600 text-center rounded-lg font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t.hero.ctaFactory}
-              </Link>
-              <Link
-                to="/partner-register"
-                className="block w-full px-4 py-3 bg-gray-800 text-white text-center rounded-lg font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t.nav.partnerRegister}
-              </Link>
+                {t.nav.applyNow}
+                <ChevronDown size={16} className={`transition-transform ${applyOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {applyOpen && (
+                <div className="pl-4 mt-2 space-y-2">
+                  <Link
+                    to="/seller-register"
+                    className="block py-3 text-gray-700 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t.nav.sellerRegister}
+                  </Link>
+                  <Link
+                    to="/factory-register"
+                    className="block py-3 text-gray-700 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t.nav.factoryRegister}
+                  </Link>
+                  <Link
+                    to="/partner-register"
+                    className="block py-3 text-gray-700 font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t.nav.partnerRegister}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

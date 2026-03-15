@@ -78,16 +78,23 @@ export const Home: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/seller-register"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-orange-900 font-semibold rounded-lg hover:bg-orange-50 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-white text-orange-900 font-semibold rounded-lg hover:bg-orange-50 transition-colors"
               >
                 {t.hero.ctaSeller}
                 <ArrowRight size={20} />
               </Link>
               <Link
                 to="/factory-register"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
               >
                 {t.hero.ctaFactory}
+                <ArrowRight size={20} />
+              </Link>
+              <Link
+                to="/partner-register"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-400 transition-colors"
+              >
+                {t.hero.ctaPartner || t.nav.partnerRegister}
                 <ArrowRight size={20} />
               </Link>
             </div>
@@ -183,15 +190,21 @@ export const Home: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/seller-register"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-orange-900 font-semibold rounded-lg hover:bg-orange-50 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-white text-orange-900 font-semibold rounded-lg hover:bg-orange-50 transition-colors"
             >
               {t.hero.ctaSeller}
             </Link>
             <Link
               to="/factory-register"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors"
             >
               {t.hero.ctaFactory}
+            </Link>
+            <Link
+              to="/partner-register"
+              className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-400 transition-colors"
+            >
+              {t.hero.ctaPartner || t.nav.partnerRegister}
             </Link>
           </div>
         </div>
