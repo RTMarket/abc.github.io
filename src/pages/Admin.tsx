@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useAdmin } from '@/store/AdminContext';
-import { Download, Trash2, LogOut, Package, Store, MessageCircle } from 'lucide-react';
+import { Download, Trash2, LogOut, Package, Store, MessageCircle, Users } from 'lucide-react';
 
 export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const { isAdmin, adminLogin, adminLogout, sellerSubmissions, factorySubmissions, contactSubmissions, deleteSellerSubmission, deleteFactorySubmission, deleteContactSubmission } = useAdmin();
+  const { isAdmin, adminLogin, adminLogout, sellerSubmissions, factorySubmissions, contactSubmissions, partnerSubmissions, deleteSellerSubmission, deleteFactorySubmission, deleteContactSubmission, deletePartnerSubmission } = useAdmin();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -26,13 +26,15 @@ export const Admin: React.FC = () => {
     navigate('/');
   };
 
-  const exportToExcel = (type: 'seller' | 'factory' | 'contact') => {
-    const data = type === 'seller' ? sellerSubmissions : type === 'factory' ? factorySubmissions : contactSubmissions;
+  const exportToExcel = (type: 'seller' | 'factory' | 'contact' | 'partner') => {
+    const data = type === 'seller' ? sellerSubmissions : type === 'factory' ? factorySubmissions : type === 'contact' ? contactSubmissions : partnerSubmissions;
     const headers = type === 'seller'
       ? ['企业名称(中文)', '企业名称(英文)', '统一社会信用代码', '联系人', '电话', '邮箱', '微信', '当前平台', '目标平台', '美国店铺数', '墨西哥店铺数', '需要合伙人', '需要美国银行', '需要墨西哥银行', '月销售额', '产品类目', '海外仓', '备货资金', '需要供应链', '需要MCN', '需要物流', '需要支付', '服务方案', '预算', '其他需求', '提交时间']
       : type === 'factory'
       ? ['工厂名称(英文)', '工厂名称(中文)', '注册国家', '注册地址', '税号', '联系人', '电话', '邮箱', '网站', '产品类目', '产品描述', '有认证', '资质证书', 'MOQ', '交货时间', '月产能', '本土库存', '发货方式', '样品订单', '品牌服务', '其他信息', '提交时间']
-      : ['姓名', '邮箱', '电话', '留言内容', '提交时间'];
+      : type === 'contact'
+      ? ['姓名', '邮箱', '电话', '留言内容', '提交时间']
+      : ['称呼', '姓名(英文)', '姓名(中文)', '出生日期', '国籍', '证件类型', '居住州', '居住城市', '地址', '电话', '邮箱', 'Telegram', 'WhatsApp', '紧急联系人', '关系', '紧急联系人电话', '是否有美/墨公司', '公司名称', '公司类型', '注册日期', '注册州', '公司业务', '是否有实体店', '年收入', '是否有银行账户', '是否有电商经验', '电商经验详情', '是否有仓储物流', '仓储物流详情', '是否有会计法律服务', '会计法律详情', '目标卖家类型', '预期店铺数量', '期望合作模式', '期望利润分成', '是否接受月度补贴', '每周可用时间', '合作期限', '如何发现我们', '其他问题', '是否发送简历', '确认信息', '同意隐私条款', '提交时间'];
 
     const rows = data.map((item: any) => {
       if (type === 'seller') {
@@ -89,13 +91,61 @@ export const Admin: React.FC = () => {
           item.other_info || '',
           item.created_at ? new Date(item.created_at).toLocaleString() : ''
         ];
-      } else {
+      } else if (type === 'contact') {
         // contact
         return [
           item.name || '',
           item.email || '',
           item.phone || '',
           item.message || '',
+          item.created_at ? new Date(item.created_at).toLocaleString() : ''
+        ];
+      } else {
+        // partner
+        return [
+          item.title || '',
+          item.full_name_en || '',
+          item.full_name_cn || '',
+          item.dob || '',
+          item.nationality || '',
+          item.identity_type || '',
+          item.residence_state || '',
+          item.residence_city || '',
+          item.address || '',
+          item.phone || '',
+          item.email || '',
+          item.telegram || '',
+          item.whatsapp || '',
+          item.emergency_contact_name || '',
+          item.emergency_contact_relation || '',
+          item.emergency_contact_phone || '',
+          item.has_us_mx_company || '',
+          item.company_name || '',
+          item.company_type || '',
+          item.company_reg_date || '',
+          item.company_reg_state || '',
+          item.company_business || '',
+          item.has_physical_business || '',
+          item.annual_revenue || '',
+          item.has_bank_account || '',
+          item.has_ecommerce_exp || '',
+          item.ecommerce_exp_detail || '',
+          item.has_warehouse_logistics || '',
+          item.warehouse_logistics_detail || '',
+          item.has_accounting_legal || '',
+          item.accounting_legal_detail || '',
+          (item.target_seller_type || []).join(', '),
+          item.expected_store_count || '',
+          (item.expected_coop_model || []).join(', '),
+          item.expected_profit_share || '',
+          item.accept_monthly_subsidy || '',
+          item.weekly_available_time || '',
+          item.coop_duration || '',
+          item.how_found_us || '',
+          item.additional_questions || '',
+          item.cv_sent || '',
+          item.confirm_info ? '是' : '否',
+          item.agree_privacy ? '是' : '否',
           item.created_at ? new Date(item.created_at).toLocaleString() : ''
         ];
       }
@@ -167,7 +217,7 @@ export const Admin: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold">{t.admin.title}</h1>
               <p className="text-orange-200 mt-1">
-                {t.admin.total}: {sellerSubmissions.length + factorySubmissions.length + contactSubmissions.length}
+                {t.admin.total}: {sellerSubmissions.length + factorySubmissions.length + contactSubmissions.length + partnerSubmissions.length}
               </p>
             </div>
             <button
@@ -361,7 +411,75 @@ export const Admin: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Partner Applications */}
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Users className="w-5 h-5 text-orange-600" />
+              {language === 'zh' ? '合伙人申请' : 'Partner Applications'} ({partnerSubmissions.length})
+            </h2>
+            {partnerSubmissions.length > 0 && (
+              <button
+                onClick={() => exportToExcel('partner')}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+              >
+                <Download size={18} />
+                {t.admin.exportExcel}
+              </button>
+            )}
+          </div>
+
+          {partnerSubmissions.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">{t.admin.noData}</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{language === 'zh' ? '姓名' : 'Name'}</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{language === 'zh' ? '联系方式' : 'Contact'}</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{language === 'zh' ? '是否有公司' : 'Has Company'}</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">{t.admin.submittedAt}</th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-gray-900">{t.admin.action}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {partnerSubmissions.map(sub => (
+                    <tr key={sub.id} className="border-t hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        <div>{sub.full_name_en}</div>
+                        <div className="text-xs text-gray-500">{sub.full_name_cn}</div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">
+                        <div>{sub.email}</div>
+                        <div className="text-xs">{sub.phone}</div>
+                        <div className="text-xs">{sub.telegram}</div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">
+                        {sub.has_us_mx_company === 'yes' ? sub.company_name : sub.has_us_mx_company}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">
+                        {sub.created_at ? new Date(sub.created_at).toLocaleString() : ''}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => deletePartnerSubmission(sub.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
+
+export default Admin;
