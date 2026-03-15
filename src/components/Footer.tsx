@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { Mail, Phone, MapPin, Linkedin, Instagram, MessageCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Instagram } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { t, language } = useLanguage();
-  const [showWechat, setShowWechat] = useState(false);
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -40,44 +39,35 @@ export const Footer: React.FC = () => {
             </div>
 
             {/* Social Media */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-start gap-4">
               <span className="text-gray-400 text-sm">{t.footer.followUs}</span>
-              <a
-                href="https://www.linkedin.com/company/hong-kong-prime-harmony-supply-chain-management-limited/?viewAsMember=true"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
-              >
-                <Linkedin size={18} />
-              </a>
-              <a
-                href="https://www.instagram.com/fscfactoryentry/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
-              >
-                <Instagram size={18} />
-              </a>
-              <div className="relative">
-                <button
-                  onClick={() => setShowWechat(!showWechat)}
+              <div className="flex flex-col gap-3">
+                <a
+                  href="https://www.linkedin.com/company/hong-kong-prime-harmony-supply-chain-management-limited/?viewAsMember=true"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
                 >
-                  <MessageCircle size={18} />
-                </button>
-                {showWechat && (
-                  <div className="absolute bottom-full left-0 mb-2 p-2 bg-white rounded-lg shadow-xl">
-                    <img
-                      src="/wechat-qr.png"
-                      alt="WeChat QR Code"
-                      className="w-32 h-32 object-contain"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                    <p className="text-gray-600 text-xs text-center mt-1">{t.social.scanQr}</p>
-                  </div>
-                )}
+                  <Linkedin size={18} />
+                </a>
+                <a
+                  href="https://www.instagram.com/fscfactoryentry/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
+                >
+                  <Instagram size={18} />
+                </a>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="w-24 h-24 bg-white p-1 rounded-lg">
+                  <img
+                    src="/wechat-qr.png"
+                    alt="微信公众号二维码"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <p className="text-gray-400 text-xs text-center">{language === 'zh' ? '微信公众号' : 'WeChat Official'}</p>
               </div>
             </div>
           </div>
